@@ -87,66 +87,60 @@ async function start(nome, cpf, telefone, email, prioridade) {
   const resServico = await getServicos();
   let servico = resServico.length ? resServico[0].id : 1476;
   routine = setInterval(async () => {
-    if (!locais.length) {
-      console.log("Consultando locais de vacinação...");
-      locais = await getLocais();
-    } else {
-      console.log("Atualizando locais de vacinação...");
-      locais = await getLocais();
-      if (prioridade) {
-        locais = locais.sort((a, b) => {
-          if (a.nome.toLowerCase().includes(prioridade.toLowerCase()))
-            return -1;
-          if (b.nome.toLowerCase().includes(prioridade.toLowerCase())) return 1;
-        });
-      }
-      for (let i = 0; i < locais.length; i++) {
-        console.log("Vagas Disponíveis: ", locais[i].vagasdisponiveis);
-        if (locais[i].vagasdisponiveis) {
-          let today = new Date();
-          const h1 = await getHorarios(
-            locais[i].id,
-            today.getMonth() + 1 < 10
-              ? "0" + (today.getMonth() + 1)
-              : "" + (today.getMonth() + 1),
-            today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
+    console.log("Atualizando locais de vacinação...");
+    locais = await getLocais();
+    if (prioridade) {
+      locais = locais.sort((a, b) => {
+        if (a.nome.toLowerCase().includes(prioridade.toLowerCase())) return -1;
+        if (b.nome.toLowerCase().includes(prioridade.toLowerCase())) return 1;
+      });
+    }
+    for (let i = 0; i < locais.length; i++) {
+      console.log("Vagas Disponíveis: ", locais[i].vagasdisponiveis);
+      if (locais[i].vagasdisponiveis) {
+        let today = new Date();
+        const h1 = await getHorarios(
+          locais[i].id,
+          today.getMonth() + 1 < 10
+            ? "0" + (today.getMonth() + 1)
+            : "" + (today.getMonth() + 1),
+          today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
+        );
+        console.log(locais[i]);
+        today.setDate(today.getDate() + 1);
+        const h2 = await getHorarios(
+          locais[i].id,
+          today.getMonth() + 1 < 10
+            ? "0" + (today.getMonth() + 1)
+            : "" + (today.getMonth() + 1),
+          today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
+        );
+        locais[i].horarios = h1.concat(h2);
+        if (!locais[i].horarios.length) {
+          console.log(
+            `Não há horários disponíveis em "${locais[i].nome} - ${
+              locais[i].descricao
+            }" até ${today.toLocaleString()}`
           );
-          console.log(locais[i]);
-          today.setDate(today.getDate() + 1);
-          const h2 = await getHorarios(
-            locais[i].id,
-            today.getMonth() + 1 < 10
-              ? "0" + (today.getMonth() + 1)
-              : "" + (today.getMonth() + 1),
-            today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
-          );
-          locais[i].horarios = h1.concat(h2);
-          if (!locais[i].horarios.length) {
-            console.log(
-              `Não há horários disponíveis em "${locais[i].nome} - ${
-                locais[i].descricao
-              }" até ${today.toLocaleString()}`
-            );
-          } else {
-            console.log(
-              `Horarios disponíveis para ${locais[i].descricao}: ${locais[i].horarios}`
-            );
-            for (let j = 0; j < locais[i].horarios.length; j++) {
-              agendar(
-                nome,
-                cpf,
-                telefone,
-                email,
-                locais[i].inicio,
-                locais[i].horarios[j],
-                servico,
-                locais[i].id
-              );
-            }
-          }
         } else {
-          console.log(`Não há vagas disponíveis para ${locais[i].nome}`);
+          console.log(
+            `Horarios disponíveis para ${locais[i].descricao}: ${locais[i].horarios}`
+          );
+          for (let j = 0; j < locais[i].horarios.length; j++) {
+            agendar(
+              nome,
+              cpf,
+              telefone,
+              email,
+              locais[i].inicio,
+              locais[i].horarios[j],
+              servico,
+              locais[i].id
+            );
+          }
         }
+      } else {
+        console.log(`Não há vagas disponíveis para ${locais[i].nome}`);
       }
     }
   }, 2000);
