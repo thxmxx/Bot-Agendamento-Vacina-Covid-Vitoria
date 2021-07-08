@@ -1,7 +1,7 @@
 // Acessar: https://agendamento.vitoria.es.gov.br/
 // colar esse conteũdo no console e rodar: start('NOME COMPETO', 'CPF', 'TELEFONE', 'EMAIL');
 //
-// start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com');
+// start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com', 'suá');
 let routine = null;
 
 async function getRecaptchaToken() {
@@ -46,8 +46,8 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
       }),
     }).then((res) => {
       res.json().then((b) => {
-        if(!b.error) {
-          console.log('CONSEGUIMOSSSS!!!!!');
+        if (!b.error) {
+          console.log("CONSEGUIMOSSSS!!!!!");
           console.log(b);
           stop();
         }
@@ -94,22 +94,27 @@ function getHorarios(id, mes, dia) {
   });
 }
 
-async function start(nome, cpf, telefone, email, stop) {
+async function start(nome, cpf, telefone, email, prioridade) {
   let locais = [];
   const resServico = await getServicos();
   let servico = resServico.length ? resServico[0].id : 1476;
   routine = setInterval(async () => {
-    if (stop) d;
     if (!locais.length) {
-      console.log('Consultando locais de vacinação...');
+      console.log("Consultando locais de vacinação...");
       locais = await getLocais();
-    }
-    else {
-      console.log('Atualizando locais de vacinação...');
+    } else {
+      console.log("Atualizando locais de vacinação...");
       locais = await getLocais();
+      if (prioridade) {
+        locais = locais.sort((a, b) => {
+          if (a.nome.toLowerCase().includes(prioridade.toLowerCase()))
+            return -1;
+          if (b.nome.toLowerCase().includes(prioridade.toLowerCase())) return 1;
+        });
+      }
       for (let i = 0; i < locais.length; i++) {
-        if (!locais[i].vagasdisponiveis) console.log(`Não há vagas disponíveis para ${locais[i].nome}`);
-        if (!locais[i].horarios && locais[i].vagasdisponiveis) {
+        console.log("Vagas Disponíveis: ", locais[i].vagasdisponiveis);
+        if (locais[i].vagasdisponiveis) {
           let today = new Date();
           const h1 = await getHorarios(
             locais[i].id,
@@ -128,18 +133,16 @@ async function start(nome, cpf, telefone, email, stop) {
             today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
           );
           locais[i].horarios = h1.concat(h2);
-          if (!locais[i].horarios.length)
+          if (!locais[i].horarios.length) {
             console.log(
               `Não há horários disponíveis em "${locais[i].nome} - ${
                 locais[i].descricao
               }" até ${today.toLocaleString()}`
             );
-          else
+          } else {
             console.log(
               `Horarios disponíveis para ${locais[i].descricao}: ${locais[i].horarios}`
             );
-        } else {
-          if (locais[i].horarios)
             for (let j = 0; j < locais[i].horarios.length; j++) {
               agendar(
                 nome,
@@ -152,14 +155,17 @@ async function start(nome, cpf, telefone, email, stop) {
                 locais[i].id
               );
             }
+          }
+        } else {
+          console.log(`Não há vagas disponíveis para ${locais[i].nome}`);
         }
       }
     }
-  }, 1000);
+  }, 2000);
 }
 
 function stop() {
   if (routine) clearInterval(routine);
 }
 
-//start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com');
+//start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com', 'suá');
