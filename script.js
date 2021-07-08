@@ -4,18 +4,6 @@
 // start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com', 'suá');
 let routine = null;
 
-async function getRecaptchaToken() {
-  return await new Promise((resolve) => {
-    window.grecaptcha.ready(async () => {
-      const token = await window.grecaptcha.execute(
-        "6LcwodoaAAAAAKL6uDq4yDzRkzferKf9NUcj0f5a",
-        { action: "novoAgendamento" }
-      );
-      resolve(token);
-    });
-  });
-}
-
 function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
   new Promise((resolve) => {
     window.grecaptcha.ready(async () => {
@@ -41,7 +29,7 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
         unidade,
         telefone,
         email,
-        captcha: await getRecaptchaToken(),
+        captcha: token,
         respostas: [],
       }),
     }).then((res) => {
