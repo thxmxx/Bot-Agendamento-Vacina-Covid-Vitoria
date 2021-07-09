@@ -2,9 +2,9 @@
 
 ## Chrome
 
-![Exemplo](howto.gif)
+Abra o [script](https://raw.githubusercontent.com/thxmxx/Bot-Agendamento-Vacina-Covid-Vitoria/main/script.js) e siga as instruções:
 
-[Script](https://raw.githubusercontent.com/thxmxx/Bot-Agendamento-Vacina-Covid-Vitoria/main/script.js)
+![Exemplo](howto.gif)
 
 ## Docker
 
