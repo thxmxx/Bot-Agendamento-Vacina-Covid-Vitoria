@@ -32,30 +32,32 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
         captcha: token,
         respostas: [],
       }),
-    }).then((res) => {
-      res.json().then((b) => {
-        if (!b.error) {
-          console.log("CONSEGUIMOSSSS!!!!!");
+    })
+      .then((res) => {
+        res.json().then((b) => {
+          if (!b.error) {
+            console.log("CONSEGUIMOSSSS!!!!!");
+            console.log(b);
+            stop();
+          }
           console.log(b);
-          stop();
-        }
-        console.log(b);
+        });
+      })
+      .catch((err) => {
+        console.log("ERRO", err);
       });
-    }).catch(err => {
-      console.log("ERRO", err);
-    });
   });
 }
 
 function getServicos() {
   return new Promise((resolve) => {
-    fetch(
-      "https://agendamento.vitoria.es.gov.br/api/categorias/2/servicos"
-    ).then((res) => {
-      res.json().then((j) => resolve(j));
-    }).catch(err => {
-      console.log("ERRO", err);
-    });
+    fetch("https://agendamento.vitoria.es.gov.br/api/categorias/2/servicos")
+      .then((res) => {
+        res.json().then((j) => resolve(j));
+      })
+      .catch((err) => {
+        console.log("ERRO", err);
+      });
   });
 }
 
@@ -63,11 +65,13 @@ function getLocais(servico) {
   return new Promise((resolve) => {
     fetch(
       `https://agendamento.vitoria.es.gov.br/api/servicos/${servico}/unidades/vagas`
-    ).then((res) => {
-      res.json().then((j) => resolve(j));
-    }).catch(err => {
-      console.log("ERRO", err);
-    });
+    )
+      .then((res) => {
+        res.json().then((j) => resolve(j));
+      })
+      .catch((err) => {
+        console.log("ERRO", err);
+      });
   });
 }
 
@@ -82,12 +86,24 @@ function getHorarios(servico, id, mes, dia) {
         dia +
         "?_=" +
         new Date().getTime()
-    ).then((res) => {
-      res.json().then((j) => resolve(j));
-    }).catch(err => {
-      console.log("ERRO", err);
-    });
+    )
+      .then((res) => {
+        res.json().then((j) => resolve(j));
+      })
+      .catch((err) => {
+        console.log("ERRO", err);
+      });
   });
+}
+
+function getDiaMes(data) {
+  let ret = { dia: "", mes: "" };
+  ret.mes =
+  data.getMonth() + 1 < 10
+      ? "0" + (data.getMonth() + 1)
+      : "" + (data.getMonth() + 1);
+  ret.dia = data.getDate() < 10 ? "0" + data.getDate() : "" + data.getDate();
+  return ret;
 }
 
 async function start(nome, cpf, telefone, email, prioridade) {
@@ -116,19 +132,17 @@ async function start(nome, cpf, telefone, email, prioridade) {
           const h1 = await getHorarios(
             servico,
             locais[i].id,
-            today.getMonth() + 1 < 10
-              ? "0" + (today.getMonth() + 1)
-              : "" + (today.getMonth() + 1),
-            today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
+            getDiaMes(today).mes,
+            getDiaMes(today).dia
           );
           console.log(locais[i]);
           today.setDate(today.getDate() + 1);
+          console.log(today)
           const h2 = await getHorarios(
+            servico,
             locais[i].id,
-            today.getMonth() + 1 < 10
-              ? "0" + (today.getMonth() + 1)
-              : "" + (today.getMonth() + 1),
-            today.getDate() < 10 ? "0" + today.getDate() : "" + today.getDate()
+            getDiaMes(today).mes,
+            getDiaMes(today).dia
           );
           locais[i].horarios = h1.concat(h2);
           if (!locais[i].horarios.length) {
