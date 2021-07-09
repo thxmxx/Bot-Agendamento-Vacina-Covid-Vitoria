@@ -137,7 +137,6 @@ async function start(nome, cpf, telefone, email, prioridade) {
           );
           console.log(locais[i]);
           today.setDate(today.getDate() + 1);
-          console.log(today)
           const h2 = await getHorarios(
             servico,
             locais[i].id,
