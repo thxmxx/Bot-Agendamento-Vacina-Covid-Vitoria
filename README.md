@@ -2,7 +2,7 @@
 
 ## Chrome
 
-Abra o [script](https://raw.githubusercontent.com/thxmxx/Bot-Agendamento-Vacina-Covid-Vitoria/main/script.js) e siga as instruções:
+Abra o [script](https://raw.githubusercontent.com/thxmxx/Bot-Agendamento-Vacina-Covid-Vitoria/main/script.js) e siga as instruções (para abrir o console do chrome aperte `F12`):
 
 ![Exemplo](howto.gif)
 
