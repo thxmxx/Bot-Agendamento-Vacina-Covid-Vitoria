@@ -1,7 +1,7 @@
 // Acessar: https://agendamento.vitoria.es.gov.br/
 // colar esse conteũdo no console e rodar: start('NOME COMPETO', 'CPF', 'TELEFONE', 'EMAIL');
 //
-// start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com', 'suá');
+//start('Fulano da Silva', '11111111111', '2799999999', 'email@gmail.com', 'centro');
 let routine = null;
 
 function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
@@ -179,4 +179,4 @@ function stop() {
   if (routine) clearInterval(routine);
 }
 
-//start('LUCAS THOM RAMOS', '11111111111', '27996311988', 'thxmxx@gmail.com', 'suá');
+//start('Fulano da Silva', 'CPF', 'TELEFONE', 'email@gmail.com', 'centro');
