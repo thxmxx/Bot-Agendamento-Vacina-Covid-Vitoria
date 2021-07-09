@@ -41,6 +41,8 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
         }
         console.log(b);
       });
+    }).catch(err => {
+      console.log("ERRO", err);
     });
   });
 }
@@ -51,6 +53,8 @@ function getServicos() {
       "https://agendamento.vitoria.es.gov.br/api/categorias/2/servicos"
     ).then((res) => {
       res.json().then((j) => resolve(j));
+    }).catch(err => {
+      console.log("ERRO", err);
     });
   });
 }
@@ -61,6 +65,8 @@ function getLocais(servico) {
       `https://agendamento.vitoria.es.gov.br/api/servicos/${servico}/unidades/vagas`
     ).then((res) => {
       res.json().then((j) => resolve(j));
+    }).catch(err => {
+      console.log("ERRO", err);
     });
   });
 }
@@ -78,6 +84,8 @@ function getHorarios(servico, id, mes, dia) {
         new Date().getTime()
     ).then((res) => {
       res.json().then((j) => resolve(j));
+    }).catch(err => {
+      console.log("ERRO", err);
     });
   });
 }
@@ -105,6 +113,7 @@ async function start(nome, cpf, telefone, email, prioridade) {
         console.log("Vagas Disponíveis: ", locais[i].vagasdisponiveis);
         if (locais[i].vagasdisponiveis) {
           let today = new Date();
+          today.setDate(today.getDate() + 1);
           const h1 = await getHorarios(
             servico,
             locais[i].id,
