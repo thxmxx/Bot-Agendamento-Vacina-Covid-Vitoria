@@ -113,7 +113,6 @@ async function start(nome, cpf, telefone, email, prioridade) {
         console.log("Vagas Disponíveis: ", locais[i].vagasdisponiveis);
         if (locais[i].vagasdisponiveis) {
           let today = new Date();
-          today.setDate(today.getDate() + 1);
           const h1 = await getHorarios(
             servico,
             locais[i].id,
