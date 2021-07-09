@@ -1,0 +1,16 @@
+[
+  {
+    "nome":"João da Silva",
+    "cpf":"11111111111",
+    "telefone":"2799999999",
+    "email":"jhon@doe.com",
+    "prioridade":"Suá"
+  },
+  {
+    "nome":"José das Couves",
+    "cpf":"99999999999",
+    "telefone":"27888888888",
+    "email":"joseph@cabbage.com",
+    "prioridade":"Suá"
+  }
+]

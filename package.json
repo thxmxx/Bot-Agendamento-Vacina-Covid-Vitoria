@@ -9,7 +9,6 @@
   "author": "Lucas Thom Ramos",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^10.0.0",
     "puppeteer": "^10.1.0"
   }
 }
