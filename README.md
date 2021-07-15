@@ -1,4 +1,4 @@
-# Bot-Agendamento-Vacina-Covid-Vitoria
+# Versão para Vitoria, o bot para Vila Velha está no branch vila-velha
 
 ## Chrome
 
