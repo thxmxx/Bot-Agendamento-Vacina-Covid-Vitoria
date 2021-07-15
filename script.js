@@ -1,10 +1,10 @@
 // Acessar: https://agendamento.vitoria.es.gov.br/
 // colar esse conteũdo no console e rodar: start('NOME COMPETO', 'CPF', 'TELEFONE', 'EMAIL');
 //
-//start('Fulano da Silva', '11111111111', '2799999999', 'email@gmail.com', 'centro');
+//start('Fulano da Silva', '11111111111', '2799999999', 'email@gmail.com', 'centro', '1990-12-1');
 let routine = null;
 
-function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
+function agendar(nome, cpf, telefone, email, dataNascimento, dia, hora, servico, unidade) {
   new Promise((resolve) => {
     window.grecaptcha.ready(async () => {
       const token = await window.grecaptcha.execute(recaptchaKey, {
@@ -13,7 +13,7 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
       resolve(token);
     });
   }).then(async (token) => {
-    fetch("https://agendamento.vitoria.es.gov.br/api/agendamentos", {
+    fetch("https://vacina.vilavelha.es.gov.br/api/agendamentos", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -30,6 +30,7 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
         telefone,
         email,
         captcha: token,
+        dataNascimento,
         respostas: [],
       }),
     })
@@ -49,9 +50,22 @@ function agendar(nome, cpf, telefone, email, dia, hora, servico, unidade) {
   });
 }
 
-function getServicos() {
+function getCategorias() {
   return new Promise((resolve) => {
-    fetch("https://agendamento.vitoria.es.gov.br/api/categorias/2/servicos")
+    fetch("https://vacina.vilavelha.es.gov.br/api/categorias")
+      .then((res) => {
+        res.json().then((j) => resolve(j));
+      })
+      .catch((err) => {
+        console.log("ERRO", err);
+        resolve(null);
+      });
+  });
+}
+
+function getServicos(categoria) {
+  return new Promise((resolve) => {
+    fetch(`https://vacina.vilavelha.es.gov.br/api/categorias/${categoria}/servicos`)
       .then((res) => {
         res.json().then((j) => resolve(j));
       })
@@ -64,7 +78,7 @@ function getServicos() {
 function getLocais(servico) {
   return new Promise((resolve) => {
     fetch(
-      `https://agendamento.vitoria.es.gov.br/api/servicos/${servico}/unidades/vagas`
+      `https://vacina.vilavelha.es.gov.br/api/servicos/${servico}/unidades/vagas`
     )
       .then((res) => {
         res.json().then((j) => resolve(j));
@@ -106,77 +120,79 @@ function getDiaMes(data) {
   return ret;
 }
 
-async function start(nome, cpf, telefone, email, prioridade) {
+async function start(nome, cpf, telefone, email, dataNascimento, prioridade) {
   let locais = [];
-  routine = setInterval(async () => {
-    console.log("Consultando serviços...");
-    let resServico = await getServicos();
-    resServico = resServico.filter((s) =>
-      s.nome.toLowerCase().includes("covid")
-    );
-    if (resServico.length > 0) {
-      let servico = resServico[0].id;
-      console.log("Atualizando locais de vacinação...");
-      locais = await getLocais(servico);
-      if (prioridade) {
-        locais = locais.sort((a, b) => {
-          if (a.nome.toLowerCase().includes(prioridade.toLowerCase()))
-            return -1;
-          if (b.nome.toLowerCase().includes(prioridade.toLowerCase())) return 1;
-        });
-      }
-      for (let i = 0; i < locais.length; i++) {
-        console.log("Vagas Disponíveis: ", locais[i].vagasdisponiveis);
-        if (locais[i].vagasdisponiveis) {
-          let today = new Date();
-          const h1 = await getHorarios(
-            servico,
-            locais[i].id,
-            getDiaMes(today).mes,
-            getDiaMes(today).dia
-          );
-          console.log(locais[i]);
-          today.setDate(today.getDate() + 1);
-          const h2 = await getHorarios(
-            servico,
-            locais[i].id,
-            getDiaMes(today).mes,
-            getDiaMes(today).dia
-          );
-          locais[i].horarios = h1.concat(h2);
-          if (!locais[i].horarios.length) {
-            console.log(
-              `Não há horários disponíveis em "${locais[i].nome} - ${
-                locais[i].descricao
-              }" até ${today.toLocaleString()}`
+  console.log("Consultando categorias...");
+  let categorias = await getCategorias();
+  categorias = categorias.filter(c => c.nome.toLowerCase().includes('covid') && c.nome.toLowerCase().includes('1ª dose'))
+  if(categorias && categorias.length > 0) {
+    let categoria = categorias[0];
+    routine = setInterval(async () => {
+      console.log("Consultando serviços...");
+      let resServico = await getServicos(categoria.id);
+      console.log('resServico', resServico);
+      resServico = resServico.filter((s) =>
+        s.nome.toLowerCase().includes("população geral")
+      );
+      if (resServico.length > 0) {
+        let servico = resServico[0].id;
+        console.log("Atualizando locais de vacinação...");
+        locais = await getLocais(servico);
+        if (prioridade) {
+          locais = locais.sort((a, b) => {
+            if (a.nome.toLowerCase().includes(prioridade.toLowerCase()))
+              return -1;
+            if (b.nome.toLowerCase().includes(prioridade.toLowerCase())) return 1;
+          });
+        }
+        console.log('locais', locais);
+        for (let i = 0; i < locais.length; i++) {
+          console.log("Vagas Disponíveis: ", locais[i].vagasDisponiveis);
+          if (locais[i].vagasDisponiveis) {
+            let today = new Date(locais[i].inicio);
+            const h1 = await getHorarios(
+              servico,
+              locais[i].id,
+              getDiaMes(today).mes,
+              getDiaMes(today).dia
             );
-          } else {
-            console.log(
-              `Horarios disponíveis para ${locais[i].descricao}: ${locais[i].horarios}`
-            );
-            for (let j = 0; j < locais[i].horarios.length; j++) {
-              agendar(
-                nome,
-                cpf,
-                telefone,
-                email,
-                locais[i].inicio,
-                locais[i].horarios[j],
-                servico,
-                locais[i].id
+            locais[i].horarios = h1;
+            if (!locais[i].horarios.length) {
+              console.log(
+                `Não há horários disponíveis em "${locais[i].descricao}" até ${today.toLocaleString()}`
               );
+            } else {
+              console.log(
+                `Horarios disponíveis para ${locais[i].descricao}: ${locais[i].horarios}`
+              );
+              for (let j = 0; j < locais[i].horarios.length; j++) {
+                agendar(
+                  nome,
+                  cpf,
+                  telefone,
+                  email,
+                  dataNascimento,
+                  locais[i].inicio,
+                  locais[i].horarios[j],
+                  servico,
+                  locais[i].id
+                );
+              }
             }
+          } else {
+            console.log(`Não há vagas disponíveis para ${locais[i].nome}`);
           }
-        } else {
-          console.log(`Não há vagas disponíveis para ${locais[i].nome}`);
         }
       }
-    }
-  }, 2000);
+    }, 2000);
+  } 
+  else {
+    start(nome, cpf, telefone, email, dataNascimento, prioridade);
+  }
 }
 
 function stop() {
   if (routine) clearInterval(routine);
 }
 
-//start('Fulano da Silva', 'CPF', 'TELEFONE', 'email@gmail.com', 'centro');
+//start('Fulano da Silva', '11111111111', '2799999999', 'email@gmail.com', 'centro', '1990-12-1');
