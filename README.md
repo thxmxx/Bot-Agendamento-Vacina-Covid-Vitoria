@@ -9,7 +9,7 @@ Abra o [script](https://raw.githubusercontent.com/thxmxx/Bot-Agendamento-Vacina-
 ## Docker
 
 ```
-docker run -e NOME="Fulano da Silva" -e CPF="11111111111" -e TELEFONE="2799999999" -e EMAIL="fulano@gmail.com"  -e DATANASC="1990-12-1" -e PRIORIDADE="centro" -it thxmxx/vacina-vitoria:1.0.0-vv
+docker run -e NOME="Fulano da Silva" -e CPF="11111111111" -e TELEFONE="2799999999" -e EMAIL="fulano@gmail.com"  -e DATANASC="1990-12-1" -e PRIORIDADE="centro" -it thxmxx/vacina-vitoria:1.0.1-vv
 ```
 
 ## Node.js
