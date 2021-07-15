@@ -22,7 +22,7 @@ if (dados.nome && dados.cpf && dados.telefone && dados.email && dados.dataNasc) 
   (async () => {
     const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
     const page = await browser.newPage();
-    await page.goto("https://vacina.vilavelha.es.gov.br/#/");
+    await page.goto("https://vacina.vilavelha.es.gov.br/");
 
     await page.evaluate(fs.readFileSync("script.js", "utf8"));
     await page.evaluate((d) => {

@@ -1,5 +1,5 @@
-// Acessar: https://agendamento.vitoria.es.gov.br/
-// colar esse conteũdo no console e rodar: start('NOME COMPETO', 'CPF', 'TELEFONE', 'EMAIL');
+// Acessar: https://vacina.vilavelha.es.gov.br
+// colar esse conteũdo no console e rodar: start('NOME COMPETO', 'CPF', 'TELEFONE', 'EMAIL', 'DATANASC');
 //
 //start('Fulano da Silva', '11111111111', '2799999999', 'email@gmail.com', 'centro', '1990-12-1');
 let routine = null;
