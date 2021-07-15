@@ -131,7 +131,6 @@ async function start(nome, cpf, telefone, email, dataNascimento, prioridade) {
     routine = setInterval(async () => {
       console.log("Consultando serviços...");
       let resServico = await getServicos(categoria.id);
-      console.log('resServico', resServico);
       resServico = resServico.filter((s) =>
         s.nome.toLowerCase().includes("população geral")
       );
@@ -146,7 +145,6 @@ async function start(nome, cpf, telefone, email, dataNascimento, prioridade) {
             if (b.nome.toLowerCase().includes(prioridade.toLowerCase())) return 1;
           });
         }
-        console.log('locais', locais);
         for (let i = 0; i < locais.length; i++) {
           console.log("Vagas Disponíveis: ", locais[i].vagasDisponiveis);
           if (locais[i].vagasDisponiveis) {
