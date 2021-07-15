@@ -4,6 +4,7 @@
 //start('Fulano da Silva', '11111111111', '2799999999', 'email@gmail.com', 'centro', '1990-12-1');
 let routine = null;
 
+
 function agendar(nome, cpf, telefone, email, dataNascimento, dia, hora, servico, unidade) {
   new Promise((resolve) => {
     window.grecaptcha.ready(async () => {
